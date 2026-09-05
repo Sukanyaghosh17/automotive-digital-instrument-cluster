@@ -26,6 +26,7 @@ appInstrument_cluster_autogen/
 *.jsc
 
 # Compiled binaries (explicit paths so source directories are NOT ignored)
+ecu_simulator/vehicle_ecu
 ecu_simulator/build/vehicle_ecu
 cluster_gateway/build/cluster_gateway
 cluster_ui/build/cluster_ui
