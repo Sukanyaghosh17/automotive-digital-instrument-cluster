@@ -40,17 +40,17 @@ void ClusterGateway::init()
         throw std::runtime_error("[ClusterGateway] Failed to initialize vsomeip application");
     }
 
-    // Offer Service 0x1234, Instance 0x5678
-    m_app->offer_service(SERVICE_ID, INSTANCE_ID);
-
     // Register Eventgroup 0x0001
     std::set<vsomeip::eventgroup_t> eventGroup;
     eventGroup.insert(EVENTGROUP_ID);
 
-    // Offer all three typed telemetry events
+    // Offer all three typed telemetry events BEFORE offering the service
     m_app->offer_event(SERVICE_ID, INSTANCE_ID, EVENT_ID_POWERTRAIN, eventGroup);
     m_app->offer_event(SERVICE_ID, INSTANCE_ID, EVENT_ID_VEHICLE_STATUS, eventGroup);
     m_app->offer_event(SERVICE_ID, INSTANCE_ID, EVENT_ID_WARNINGS, eventGroup);
+
+    // Offer Service 0x1234, Instance 0x5678
+    m_app->offer_service(SERVICE_ID, INSTANCE_ID);
 
     setupCanSocket();
     std::cout << "[ClusterGateway] Initialized successfully. Service 0x" 

@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(vsomeip3 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system thread log)
+find_package(Boost REQUIRED COMPONENTS thread log)
 find_package(Threads REQUIRED)
 
 include_directories(
