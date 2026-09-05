@@ -46,7 +46,7 @@ Full end-to-end CAN traffic propagation remains blocked on `vcan0` because the h
 | Trip Computer (distance + avg speed) | ✅ | ✅ | ❌ (Awaiting vcan0 kernel module) |
 | Keyboard controls (W/Space/M/P/R/N/D/T/F/A/Q) | ✅ | ✅ | ❌ (Awaiting vcan0 kernel module) |
 | `cluster_gateway` vsomeip initialization | ✅ | ✅ | ✅ (Service 0x1234, events 0x8001-0x8003 registered) |
-| `cluster_ui` QML engine loading | ✅ | ✅ | ✅ (Main.qml loaded cleanly via qrc:/ClusterUI/qml/) |
+| `cluster_ui` QML engine loading | ✅ | ✅ | ✅ (Main.qml loaded cleanly via qrc:/ClusterUI/qml/; requires `qml6-module-qtqml-workerscript`) |
 | `make build` (all 3 Docker images) | ✅ | ❌ | ❌ (Blocked: Docker requires BIOS VT-x enabled) |
 | `make run` (all 3 containers live) | ✅ | ❌ | ❌ (Blocked: Docker requires BIOS VT-x enabled) |
 | End-to-end signal flow (ECU → Gateway → UI) | ✅ | ✅ | ❌ (Blocked: Awaiting vcan0 kernel module) |
@@ -202,7 +202,8 @@ sudo apt update && sudo apt install -y \
     libboost-all-dev \
     qt6-base-dev qt6-declarative-dev \
     qml6-module-qtquick qml6-module-qtquick-controls \
-    qml6-module-qtquick-layouts qml6-module-qtquick-window
+    qml6-module-qtquick-layouts qml6-module-qtquick-templates \
+    qml6-module-qtquick-window qml6-module-qtqml-workerscript
 ```
 
 ### 2. Build and Install vsomeip3 from Source

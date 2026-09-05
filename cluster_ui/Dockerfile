@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     qml6-module-qtquick-layouts \
     qml6-module-qtquick-templates \
     qml6-module-qtqml-workerscript \
+    qml6-module-qtquick-window \
     libgl1-mesa-dev \
     libx11-dev \
     libxkbcommon-x11-0 \
