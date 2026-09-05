@@ -25,10 +25,10 @@ appInstrument_cluster_autogen/
 *.qmlc
 *.jsc
 
-# Compiled binaries
-vehicle_ecu
-cluster_gateway
-cluster_ui
+# Compiled binaries (explicit paths so source directories are NOT ignored)
+ecu_simulator/build/vehicle_ecu
+cluster_gateway/build/cluster_gateway
+cluster_ui/build/cluster_ui
 appInstrument_cluster
 
 # IDE & OS temporary files
