@@ -1,0 +1,38 @@
+# Build directories & Object files
+build/
+bin/
+*.o
+*.a
+*.so
+*.dylib
+
+# CMake outputs
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile.cmake
+install_manifest.txt
+
+# Qt Creator & Qt tools
+*.user
+*.user.*
+.rcc/
+.qt/
+.cache/
+meta_types/
+qmltypes/
+appInstrument_cluster_autogen/
+*.qmlc
+*.jsc
+
+# Compiled binaries
+vehicle_ecu
+cluster_gateway
+cluster_ui
+appInstrument_cluster
+
+# IDE & OS temporary files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

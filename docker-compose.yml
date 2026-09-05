@@ -1,0 +1,41 @@
+services:
+  vehicle_ecu:
+    build:
+      context: ./ecu_simulator
+      dockerfile: Dockerfile
+    container_name: vehicle_ecu
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    tty: true
+    stdin_open: true
+
+  cluster_gateway:
+    build:
+      context: ./cluster_gateway
+      dockerfile: Dockerfile
+    container_name: cluster_gateway
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    depends_on:
+      - vehicle_ecu
+
+  cluster_gui:
+    build:
+      context: ./cluster_ui
+      dockerfile: Dockerfile
+    container_name: cluster_gui
+    network_mode: host
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+    depends_on:
+      - cluster_gateway
