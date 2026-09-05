@@ -28,7 +28,9 @@ public:
     void brake();
     void idleDecay();
     void cycleDriveMode();
+    void setDriveMode(DriveMode mode);
     bool setGear(Gear newGear);
+    void setSpeed(uint16_t speed);
 
     uint16_t getSpeed() const { return m_speed; }
     uint16_t getRpm() const { return m_rpm; }

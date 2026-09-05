@@ -105,29 +105,29 @@ bool PowertrainModel::setGear(Gear newGear)
     return true;
 }
 
+void PowertrainModel::setDriveMode(DriveMode mode)
+{
+    m_driveMode = mode;
+    updateRpm();
+}
+
+void PowertrainModel::setSpeed(uint16_t speed)
+{
+    m_speed = std::min(speed, SPEED_MAX);
+    if (m_speed > 0 && (m_gear == Gear::P || m_gear == Gear::N))
+    {
+        m_gear = Gear::D;
+    }
+    updateRpm();
+}
+
 void PowertrainModel::updateRpm()
 {
-    if (m_gear == Gear::P || m_gear == Gear::N)
+    if (m_gear == Gear::P || m_gear == Gear::N || m_speed == 0)
     {
         m_rpm = RPM_IDLE;
         return;
     }
-
-    // Realistic multi-gear shift simulation based on speed
-    // 6-speed transmission simulation
-    float ratio = 1.0f;
-    if (m_speed < 25)
-        ratio = 120.0f; // 1st gear
-    else if (m_speed < 50)
-        ratio = 75.0f;  // 2nd gear
-    else if (m_speed < 80)
-        ratio = 52.0f;  // 3rd gear
-    else if (m_speed < 120)
-        ratio = 38.0f;  // 4th gear
-    else if (m_speed < 160)
-        ratio = 28.0f;  // 5th gear
-    else
-        ratio = 22.0f;  // 6th gear
 
     // Drive mode RPM aggressiveness multiplier
     float modeMultiplier = 1.0f;
@@ -136,16 +136,43 @@ void PowertrainModel::updateRpm()
     else if (m_driveMode == DriveMode::Sport)
         modeMultiplier = 1.25f;
 
-    uint32_t calculated = RPM_IDLE + static_cast<uint32_t>((m_speed % 40 + 10) * ratio * modeMultiplier / 10.0f);
+    struct GearBand {
+        uint16_t minSpeed;
+        uint16_t maxSpeed;
+        float entryRpm;
+        float exitRpm;
+    };
 
-    if (m_speed == 0)
+    GearBand band{};
+    if (m_gear == Gear::R)
     {
-        m_rpm = RPM_IDLE;
+        band = {0, 35, static_cast<float>(RPM_IDLE), 2800.0f};
     }
-    else
+    else // Gear::D (6-speed transmission model)
     {
-        m_rpm = static_cast<uint16_t>(std::min<uint32_t>(calculated, RPM_MAX));
+        if (m_speed < 25)
+            band = {0, 25, static_cast<float>(RPM_IDLE), 3200.0f};  // 1st gear
+        else if (m_speed < 50)
+            band = {25, 50, 2200.0f, 3400.0f};                      // 2nd gear
+        else if (m_speed < 80)
+            band = {50, 80, 2400.0f, 3700.0f};                      // 3rd gear
+        else if (m_speed < 120)
+            band = {80, 120, 2600.0f, 4100.0f};                     // 4th gear
+        else if (m_speed < 160)
+            band = {120, 160, 2900.0f, 4500.0f};                    // 5th gear
+        else
+            band = {160, SPEED_MAX, 3200.0f, 6200.0f};              // 6th gear
     }
+
+    float bandSpan = static_cast<float>(band.maxSpeed - band.minSpeed);
+    float progress = (bandSpan > 0.0f) ? static_cast<float>(m_speed - band.minSpeed) / bandSpan : 0.0f;
+    progress = std::clamp(progress, 0.0f, 1.0f);
+
+    float baseRpm = band.entryRpm + progress * (band.exitRpm - band.entryRpm);
+    float targetRpm = static_cast<float>(RPM_IDLE) + (baseRpm - static_cast<float>(RPM_IDLE)) * modeMultiplier;
+
+    uint32_t clampedRpm = static_cast<uint32_t>(std::clamp(targetRpm, static_cast<float>(RPM_IDLE), static_cast<float>(RPM_MAX)));
+    m_rpm = static_cast<uint16_t>(clampedRpm);
 }
 
 std::string PowertrainModel::getGearString() const
